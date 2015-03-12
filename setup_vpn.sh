@@ -7,7 +7,7 @@ then
 fi
 while true
 do
-	read -p "请输入你需要的帐号名： " VPN_USER
+	read -p "请输入PPTP/L2TP帐号名： " VPN_USER
 	if [ "A$VPN_USER" = "A" ]
 	then
 		echo "帐号名不能为空"
@@ -19,8 +19,8 @@ done
 
 
 while true; do
-  read -p "请输入你需要的密码： " VPN_PASSWD
-  if [ "x$VPN_PASSWD" = "x" ]
+  read -p "请输入PPTP/L2TP密码： " VPN_PASSWD
+  if [ "A$VPN_PASSWD" = "A" ]
   then
     echo "密码不能为空"
   else
@@ -28,9 +28,32 @@ while true; do
   fi
 done
 
+while true
+do
+	read -p "请输入L2TP密钥: " VPN_PSK
+	if [ "A$VPN_PSK" = "A" ]
+	then
+		echo "密钥不可为空"
+	else
+		break
+	fi
+done
 
-echo "请输入L2TP密钥： "; read -p "" VPN_PSK; 
-echo ""
+
+
+while true
+do
+	read -p "请输入shadowsocks密码: " SS_PASSWD
+	if [ "A$SS_PASSWD" = "A" ]
+	then
+		echo "shadowsocks密码不可为空"
+	else
+		break
+	fi
+done
+
+
+
 
 apt-get update > /dev/null
 apt-get install wget -y  > /dev/null
@@ -41,7 +64,7 @@ echo "============================================================"
 echo "开始为你下载，请稍等！"
 
 apt-get install libnss3-dev libnspr4-dev pkg-config libpam0g-dev libcap-ng-dev libcap-ng-utils libselinux1-dev libcurl4-nss-dev libgmp3-dev flex bison gcc make libunbound-dev libnss3-tools -y  > /dev/null
-
+echo "开始配置L2TP......"
 if [ "$?" = "1" ]
 then
   echo "异常错误，程序终止"
@@ -183,6 +206,27 @@ fi
 
 /usr/sbin/service ipsec restart > /dev/null
 /usr/sbin/service xl2tpd restart > /dev/null
+
+
+echo "开始配置shadowsocks......."
+apt-get install python-pip   -y > /dev/null
+pip install shadowsocks  > /dev/null
+mkdir /etc/shadowsocks
+cat > /etc/shadowsocks/config.json << EOF
+{
+	"service_ip" : "$MY_IP",
+	"service_port" : 8388,
+	"local_port" : 1080,
+	"password" : "$SS_PASSWD",
+	"timeout" : 600,
+	"method" : "aes-256-cfb"
+}
+EOF
+ssserver -c /etc/shadowsocks/config.json > /var/log/shadowsocks.log &
+
+
+
+
 
 echo "配置成功！"
 
