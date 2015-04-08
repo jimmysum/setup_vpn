@@ -72,10 +72,19 @@ localip 192.168.0.1
 remoteip 192.168.0.23-238
 EOF
 
-echo "ms-dns 8.8.8.8" > /etc/ppp/pptpd-options
-echo "ms-dns 8.8.4.4" >> /etc/ppp/pptpd-options
-
-
+cat > /etc/ppp/pptpd-options << EOF
+name pptpd
+require-mschap-v2
+require-mppe-128
+proxyarp
+lock
+nobsdcomp
+novj
+novjccomp
+nologfd
+ms-dns 8.8.8.8
+ms-dns 8.8.4.4
+EOF
 
 echo "net.ipv4.ip_forward=1" >>  /etc/sysctl.conf
 sysctl -p > /dev/null
