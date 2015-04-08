@@ -8,7 +8,7 @@ fi
 while true
 do
 	read -p "请输入PPTP/L2TP帐号名： " VPN_USER
-	if [ "A$VPN_USER" = "A" ]
+	if [ -z $VPN_USER ]
 	then
 		echo "帐号名不能为空"
 	else
@@ -20,7 +20,7 @@ done
 
 while true; do
   read -p "请输入PPTP/L2TP密码： " VPN_PASSWD
-  if [ "A$VPN_PASSWD" = "A" ]
+  if [ -z $VPN_PASSWD ]
   then
     echo "密码不能为空"
   else
@@ -31,7 +31,7 @@ done
 while true
 do
 	read -p "请输入L2TP密钥: " VPN_PSK
-	if [ "A$VPN_PSK" = "A" ]
+	if [ -z $VPN_PSK  ]
 	then
 		echo "密钥不可为空"
 	else
@@ -44,7 +44,7 @@ done
 while true
 do
 	read -p "请输入shadowsocks密码: " SS_PASSWD
-	if [ "A$SS_PASSWD" = "A" ]
+	if [ -z $SS_PASSWD ]
 	then
 		echo "shadowsocks密码不可为空"
 	else
@@ -83,7 +83,7 @@ sysctl -p > /dev/null
 iptables -t nat -A POSTROUTING -s 192.168.0.0/24 -o eth0 -j MASQUERADE
 iptables-save > /etc/iptables
 
-update-rc.d pptpd defaults > /dev/null
+update-rc.d ptpd defaults > /dev/null
 service pptpd start > /dev/null 
 
 
